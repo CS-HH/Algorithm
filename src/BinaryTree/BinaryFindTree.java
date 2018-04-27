@@ -34,43 +34,51 @@ public class BinaryFindTree {
         return false;
     }
 
+    public void insertNode(int key) {
+        root = insert(key, root);
+    }
 
-    public void insert(int key) {//插入节点
-        if (root == null) {
-            root = new Node(key);
-            return;
+    public Node insert(int key, Node node) {//插入节点
+        if (node == null) {
+            node = new Node(key);
         }
-        Node currentNode = root;
+        if (key < node.key) {
+            node.left = insert(key, node.left);
+        } else if (key > node.key) {
+            node.right = insert(key, node.right);
+        }
 
-        //用来记录最后一个currentNode的父节点以便最后插入数据
-        Node parentNode = root;
-        boolean isLeftChild = true;
-        while (currentNode != null) {
-            parentNode = currentNode;
-            if (key < currentNode.key) {
-                currentNode = currentNode.left;
-                isLeftChild = true;
-            } else {
-                currentNode = currentNode.right;
-                isLeftChild = false;
-            }
+        return node;
+    }
+
+
+    public void deleteNode(int key) {
+        root = delete(key, root);
+    }
+
+    public Node delete(int key,Node node) {//删除指定节点
+        if (node == null) {
+            return node;
         }
-        Node newNode = new Node(key);
-        if (isLeftChild) {
-            parentNode.left = newNode;
+        if (key < node.key) {
+            node.left = delete(key,node.left);
+        } else if (key > node.key) {
+            node.right = delete(key, node.right);
+        } else if (node.left != null && node.right != null) {
+            node.key = findMin(node.right);
+            node.right = delete(node.key, node.right);
         } else {
-            parentNode.right = newNode;
+            node = (node.left != null) ? node.left : node.right;
         }
-
+        return node;
     }
 
-    /*public boolean delete(int key) {//删除指定节点
-
+    public int findMin(Node node) {
+        if (node != null) {
+            return findMin(node.left);
+        }
+        return node.key;
     }
-
-    private Node getDirectPostNode(Node delNode) {//得到待删除节点的直接后继节点
-
-    }*/
 
     public void preOrder(Node rootNode) {//先序遍历树
         if (rootNode != null) {
@@ -81,7 +89,11 @@ public class BinaryFindTree {
     }
 
     public void inOrder(Node rootNode) {//中序遍历树
-
+        if (rootNode != null) {
+            inOrder(rootNode.left);
+            System.out.println(rootNode.key);
+            inOrder(rootNode.right);
+        }
     }
 
     public void postOrder(Node rootNode) {//后序遍历树
@@ -90,19 +102,24 @@ public class BinaryFindTree {
 
     public static void main(String[] args) {
         BinaryFindTree tree = new BinaryFindTree();
-        tree.insert(1);
-        tree.insert(5);
-        tree.insert(3);
-        tree.insert(7);
-        tree.insert(21);
-        tree.insert(2);
-        tree.insert(19);
-        tree.insert(16);
+        tree.insertNode(6);
+        tree.insertNode(1);
+        tree.insertNode(2);
+        tree.insertNode(7);
+        tree.insertNode(5);
+        tree.insertNode(10);
+        tree.insertNode(21);
+        tree.insertNode(11);
+        tree.insertNode(13);
+        tree.insertNode(12);
 
-        tree.find(3);
-        tree.find(8);
 
-        tree.preOrder(tree.root);
+
+        tree.inOrder(tree.root);
+
+        tree.delete(7, tree.root);
+
+        tree.inOrder(tree.root);
     }
 
 }
